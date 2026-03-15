@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  event-system:
+    build: .
+    ports:
+      - "8081:8080"
+    environment:
+      - PYTHONUNBUFFERED=1
+    stop_grace_period: 900s
