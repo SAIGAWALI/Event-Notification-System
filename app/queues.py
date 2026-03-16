@@ -1,4 +1,5 @@
 from queue import Queue
-email_queue=Queue()
-sms_queue=Queue()
-push_queue=Queue()
+MAX_QUEUE_SIZE = 1000
+email_queue=Queue(maxsize=MAX_QUEUE_SIZE)
+sms_queue=Queue(maxsize=MAX_QUEUE_SIZE)
+push_queue=Queue(maxsize=MAX_QUEUE_SIZE)

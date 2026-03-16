@@ -5,6 +5,8 @@ import uuid
 import threading
 from app.workers import process_event
 from fastapi import HTTPException
+from queue import Full
+
 app = FastAPI()
 
 shutdown_event = threading.Event() 
@@ -27,14 +29,23 @@ def create_event(event:EventRequest):
     }
     
     if event.eventType.value=="EMAIL":
-        email_queue.put(event_data)
-        print("email_queue_size",email_queue.qsize())
+        try:
+            email_queue.put(event_data, block=False)
+            print("email_queue_size", email_queue.qsize())
+        except Full:
+            raise HTTPException(status_code=429, detail="Email queue is full")
     elif event.eventType.value=="SMS":
-        sms_queue.put(event_data)
-        print("sms_queue_size",sms_queue.qsize())
+        try:
+            sms_queue.put(event_data, block=False)
+            print("sms_queue_size", sms_queue.qsize())
+        except Full:
+            raise HTTPException(status_code=429, detail="SMS queue is full")
     elif event.eventType.value=="PUSH":
-        push_queue.put(event_data)
-        print("push_queue_size",push_queue.qsize())
+        try:
+            push_queue.put(event_data, block=False)
+            print("push_queue_size", push_queue.qsize())
+        except Full:
+            raise HTTPException(status_code=429, detail="Push queue is full")
     return{
         "eventId":event_id,"message":"Event accepted for processing"
     }
